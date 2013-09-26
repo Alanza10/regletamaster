@@ -1,0 +1,14 @@
+
+
+
+
+
+.build/uno-bb97d15f/src/regleta.cpp : src/regleta.ino
+	@mkdir -p .build/uno-bb97d15f/src
+	@echo src/regleta.ino
+	/usr/local/bin/ino preproc -d /home/gelo/Electronica/arduino-1.0.5 -o $@ $^
+
+
+all : .build/uno-bb97d15f/src/regleta.cpp
+	@true
+
