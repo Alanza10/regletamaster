@@ -1,0 +1,4 @@
+Programar:
+
+Encender y apagar un rele a una hora. cabecera+num rele+comando+hora inicio+hora fin+modificador todos los dias
+P[1-4]BHHMMSSHHMMSSA
