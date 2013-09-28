@@ -118,18 +118,7 @@ void processMessage(){
         digitalClockDisplay();       
        }
      }
-    //Programar
-    /*
-    if( cmd == PROG_HEADER ) {
-         
-       for(int i=0; i < MSG_LEN -1; i++){   
-        command[i] = Serial.read();           
-      }
-      Serial.print(cmd);
-      Serial.println(command);
-    } */
-    
-    
+
     //Programar
     if( cmd == PROG_HEADER ) {
         
