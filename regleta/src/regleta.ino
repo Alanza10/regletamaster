@@ -30,9 +30,9 @@
 
 
 
-int r1 = 13 , r2  = 11, r3 = 10 , r4 = 9;
 
-int numrele[RELAY_COUNT] = { 13 , 11, 10 , 9}; //rele numbers upto 4
+
+int numrele[RELAY_COUNT] = { 5 ,  6, 7 , 8}; //rele numbers upto 4
 Rele reles[RELAY_COUNT];
 
 void setup()  {
@@ -44,6 +44,7 @@ void setup()  {
 	 reles[i].setRele(i+1);
    	 reles[i].setPin(numrele[i]);
    	 reles[i].setOutput();
+   	 reles[i].releOff();
   }
 
   setSyncProvider(RTC.get);   // the function to get the time from the RTC
@@ -133,18 +134,18 @@ void processMessage(){
         	   break;
            case '2':
         	   reles[1].setProg(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]),juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]));
-        	   Alarm.alarmRepeat(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]), encender1); 
-        	   Alarm.alarmRepeat(juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]), apagar1); 
+        	   Alarm.alarmRepeat(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]), encender2); 
+        	   Alarm.alarmRepeat(juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]), apagar2); 
         	   break;
            case '3':
          	   reles[2].setProg(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]),juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]));
-        	   Alarm.alarmRepeat(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]), encender1); 
-        	   Alarm.alarmRepeat(juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]), apagar1);  
+        	   Alarm.alarmRepeat(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]), encender3); 
+        	   Alarm.alarmRepeat(juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]), apagar4);  
          	   break;
            case '4':
            	   reles[3].setProg(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]),juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]));
-        	   Alarm.alarmRepeat(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]), encender1); 
-        	   Alarm.alarmRepeat(juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]), apagar1);                     
+        	   Alarm.alarmRepeat(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]), encender4); 
+        	   Alarm.alarmRepeat(juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]), apagar4);                     
            	   break;
        }
      }
