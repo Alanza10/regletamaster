@@ -11,33 +11,50 @@
 #include <Time.h>  
 #include <Wire.h>  
 #include <DS1307RTC.h> 
+#include <Rele.h>
+#include <TimeAlarms.h>
 
-
-
-#define MSG_LEN  11 
+#define MSG_LEN  14
 #define RELAY_MSG_LEN 3
 #define RELAY_MSG_LEN_TIMED  5 
 #define TIME_HEADER  'T' 
-#define SHOW_TIME_HEADER  'S' 
+#define SHOW_SATUS_HEADER  'S' 
 #define PROG_HEADER  'P' 
 #define RELAY_HEADER  'R'
 #define RELAY_ON  'E'  
 #define RELAY_OFF  'A'
 #define DURATION 'D'
+#define RELAY_COUNT 4
+
+
+
+
 
 int r1 = 13 , r2  = 11, r3 = 10 , r4 = 9;
 
+int numrele[RELAY_COUNT] = { 13 , 11, 10 , 9}; //rele numbers upto 4
+Rele reles[RELAY_COUNT];
 
 void setup()  {
-  delay(3000);
+  Alarm.delay(3000);
   Serial.begin(9600);
   Serial.println("Iniciando control de regleta...");
+  //setReles
+  for(int i = 0;i<=RELAY_COUNT-1;i++){
+	 reles[i].setRele(i+1);
+   	 reles[i].setPin(numrele[i]);
+   	 reles[i].setOutput();
+  }
+
   setSyncProvider(RTC.get);   // the function to get the time from the RTC
   if(timeStatus()!= timeSet) 
      Serial.println("Unable to sync with the RTC");
   else
-     Serial.println("RTC has set the system time");      
+     Serial.println("RTC has set the system time");
+  digitalClockDisplay();
+
 }
+
 
 void loop()
 {
@@ -45,7 +62,7 @@ void loop()
   {
     processMessage();
   } 
-   delay(1000);
+  Alarm.delay(1000);
 }
 
 
@@ -80,10 +97,11 @@ void printDigits(int digits){
 // procesar mensajes serial
 
 void processMessage(){
-
+ 
   while(Serial.available() >=  MSG_LEN ){  
+	char command[MSG_LEN-1]; 
     char cmd = Serial.read() ;  
-    Serial.print(cmd); 
+    //Serial.print(cmd);
     //sync Time 
     if( cmd == TIME_HEADER ) {       
       time_t pctime = 0;
@@ -100,51 +118,80 @@ void processMessage(){
         digitalClockDisplay();       
        }
      }
-    //show Time 
-    if( cmd == SHOW_TIME_HEADER ) {       
-       char command[10];   
+    //Programar
+    /*
+    if( cmd == PROG_HEADER ) {
+         
        for(int i=0; i < MSG_LEN -1; i++){   
         command[i] = Serial.read();           
       }
-      digitalClockDisplay();
+      Serial.print(cmd);
+      Serial.println(command);
+    } */
+    
+    
+    //Programar
+    if( cmd == PROG_HEADER ) {
+        
+       for(int i=0; i < MSG_LEN -1; i++){   
+        command[i] = Serial.read();           
+      }
+        switch (command[0]) {
+           case '1':
+        	    reles[0].setProg(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]),juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]));
+        	    Alarm.alarmRepeat(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]), encender1); 
+        	    Alarm.alarmRepeat(juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]), apagar1); 
+        	   break;
+           case '2':
+        	   reles[1].setProg(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]),juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]));
+        	   Alarm.alarmRepeat(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]), encender1); 
+        	   Alarm.alarmRepeat(juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]), apagar1); 
+        	   break;
+           case '3':
+         	   reles[2].setProg(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]),juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]));
+        	   Alarm.alarmRepeat(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]), encender1); 
+        	   Alarm.alarmRepeat(juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]), apagar1);  
+         	   break;
+           case '4':
+           	   reles[3].setProg(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]),juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]));
+        	   Alarm.alarmRepeat(juntarChar(command[1],command[2]),juntarChar(command[3],command[4]),juntarChar(command[5],command[6]), encender1); 
+        	   Alarm.alarmRepeat(juntarChar(command[7],command[8]),juntarChar(command[9],command[10]),juntarChar(command[11],command[12]), apagar1);                     
+           	   break;
+       }
      }
 
-    //Programar
-    if( cmd == PROG_HEADER ) {       
-       char command[10];   
+    //hora y estado
+    if( cmd == SHOW_SATUS_HEADER ) {
+       
        for(int i=0; i < MSG_LEN -1; i++){   
         command[i] = Serial.read();           
       }
       digitalClockDisplay();
+      muestraEstado();
      }
 
      
     //Relay On-OF
     if( cmd == RELAY_HEADER  ) { 
-       char command[10];   
+   
        for(int i=0; i < MSG_LEN -1; i++){   
         command[i] = Serial.read();           
       }
-   
+
       if(command[0] == RELAY_ON ){
-        Serial.print(command[1]);
           //Encender relay sin tiempo
          switch (command[1]) {
             case '1':
-                Serial.print("Encender Relay 1");
-                digitalWrite(r1, HIGH);   // turn the LED on (HIGH is the voltage level)            
+            	reles[0].releOn();
                 break;
             case '2':
-                Serial.print("Encender Relay 2");
-                digitalWrite(r2, HIGH);   // turn the LED on (HIGH is the voltage level)            
+            	reles[1].releOn();
                 break;
             case '3':
-                Serial.print("Encender Relay 3");
-                digitalWrite(r3, HIGH);   // turn the LED on (HIGH is the voltage level)             
+            	reles[2].releOn();
                 break;
             case '4':
-                Serial.print("Encender Relay 4"); 
-                digitalWrite(r4, HIGH);   // turn the LED on (HIGH is the voltage level)               
+            	reles[3].releOn();
                 break;   
                      
         }
@@ -152,34 +199,90 @@ void processMessage(){
        
        
       if(command[0]== RELAY_OFF ){
-        Serial.print(command[1]);
          switch (command[1]) {
             case '1':
-                Serial.print("Apagar Relay 1");            
-                digitalWrite(r1, LOW);    // turn the LED off by making the voltage LOW             
-                break;
+            	reles[0].releOff();
+            	break;
             case '2':
-                Serial.print("Apagar Relay 2");
-                digitalWrite(r2, LOW);                  
-                break;
+            	reles[1].releOff();
+            	break;
             case '3':
-                Serial.print("Apagar Relay 3");
-                digitalWrite(r3, LOW);              
-                break;
+            	reles[2].releOff();
+            	break;
             case '4':
-                Serial.print("Apagar Relay 4");
-                digitalWrite(r4, LOW);                
-                break;                
+            	reles[3].releOff();
+            	break;
         } 
        }  
-     
-     /*
-      for(int i=0; i < MSG_LEN -1; i++){   
-        Serial.print(command[i]);           
-      }*/
-      Serial.println();
       } 
   } 
   
+}
+
+void muestraEstado(){
+	Serial.println("Estado Programación Reles");
+	for(int i=0;i<=RELAY_COUNT-1;i++)
+		reles[i].muestraProg();
+
+	Serial.println("Estado Actual Reles");
+	for(int i=0;i<=RELAY_COUNT-1;i++){
+		if(reles[i].isOn()){
+			//Serial.print
+			Serial.println("ON");
+		}else{
+			//Serial.print
+			Serial.println("OFF");
+		}
+	}
+}
+
+//funciones programar reles
+void encender1(){
+	reles[0].releOn();
+}
+
+
+void encender2(){
+	reles[1].releOn();
+}
+
+void encender3(){
+	reles[2].releOn();
+}
+
+void encender4(){
+	reles[3].releOn();
+}
+
+void apagar1(){
+	reles[0].releOff();
+}
+
+void apagar2(){
+	reles[1].releOff();
+}
+
+void apagar3(){
+	reles[2].releOff();
+}
+
+void apagar4(){
+	reles[3].releOff();
+}
+
+//utilidades
+int juntarChar(char h1,char h2){
+  int decenas = aEntero(h1);
+  int unidades = aEntero(h2);
+  int suma = (decenas * 10) + unidades; 
+  return suma;
+}
+
+int aEntero(char c){
+    int salida;
+    if( c >= '0' && c <= '9'){
+      salida = c - '0' ; // convert digits to a number
+    }
+    return salida;
 }
 

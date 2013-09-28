@@ -1,1 +1,4 @@
-avrdude -c usbtiny -p atmega328p -U flash:w:$1
+BUILD="/.build/atmega328p*/"
+FILE="firmware.hex"
+cd $1$BUILD
+avrdude -c usbtiny -p atmega328p -U flash:w:$FILE
