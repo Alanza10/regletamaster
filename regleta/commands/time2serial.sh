@@ -4,4 +4,5 @@ if [ -z "$1" ]; then
     exit
 fi
 END="XXX";
-TZ_adjust=+2;  echo T$(($(date +%s)+60*60*$TZ_adjust))$END > $1
+TZ_adjust=+2;  
+echo T$(($(date +%s)+60*60*$TZ_adjust))$END > $1
