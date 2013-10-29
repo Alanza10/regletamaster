@@ -78,6 +78,7 @@ void  Rele::setProg(int horai,int mini,int segi,int horaf,int minf,int segf){
 			  Serial.print(minf);
 			  Serial.print(".");
 			  Serial.println(segf);
+
 			 // releOn();
 			 // OnTick_t funcion[]={encender1,encender2,encender3,encender4};
 			 // OnTick_t funcioff[]={apagar1,apagar2,apagar3,apagar4};

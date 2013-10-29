@@ -87,8 +87,12 @@ void checkprog(int i){
 			//Serial.println(hfin);
 			convertido=AlarmHMS(hour(ahora),minute(ahora),second(ahora));
 			//Serial.println(convertido);
+			//hora inicio mayor hora final
 			if( hfin <= hinicio){
-				if(hinicio <= convertido && convertido >= hfin)reles[i].releOn();
+				//if(convertido < 86399){//menor que 23:59:59		
+					if(convertido > hinicio)reles[i].releOn();
+				//}
+				//else if(hinicio <= convertido && convertido <= hfin)reles[i].releOn(); 
 			}
 	        if(hinicio <= convertido && convertido <= hfin)reles[i].releOn();
 		}
